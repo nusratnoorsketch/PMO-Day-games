@@ -1,545 +1,255 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
-<title>Emoji Project Pictionary</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PMO Picture Pictionary | Centennial College</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
 <style>
-/* Layout: one stage. A big green "puzzle card" sits centre; the scoreboard runs down the right on wide screens, below on phones. */
-:root{
-  --green:#D4DF38;          /* Centennial Green - primary */
-  --green-20:#F2F5C3;       /* 20% tint */
-  --grey:#454546;           /* Centennial Grey */
-  --grey-deep:#2F2F30;      /* stage background, grey biased dark */
-  --grey-mid:#5B5B5C;
-  --ink:#414042;            /* Centennial Text */
-  --paper:#FFFFFF;
-  --muted:#C8C9C7;
-  --good:#7BD389;
-  --bad:#FF8A7A;
-  --display:"Franklin Gothic Demi Cond","Franklin Gothic Medium Cond","Franklin Gothic URW","Franklin Gothic Medium","Arial Narrow",Arial,sans-serif;
-  --body:"Franklin Gothic URW","Franklin Gothic Book",Arial,sans-serif;
-  color-scheme:dark;
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:var(--grey-deep);color:var(--paper);font-family:var(--body);font-size:16px;line-height:1.45}
-button,input,select{font:inherit}
-.wrap{min-height:100%;display:flex;flex-direction:column;padding-inline:16px;padding-block:0 24px;max-width:1280px;margin:0 auto}
-header.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px;border-bottom:2px solid var(--green);margin-bottom:20px;flex-wrap:wrap}
-.brand{font-family:var(--display);font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.brand b{color:var(--green);font-weight:normal}
-.home-link{background:none;border:1px solid var(--grey-mid);color:var(--muted);border-radius:6px;padding:6px 12px;cursor:pointer}
-.home-link:hover{border-color:var(--green);color:var(--green)}
-h1,h2,h3{font-family:var(--display);font-weight:normal;margin:0;text-wrap:balance;line-height:1.05}
-.eyebrow{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:8px;padding:12px 20px;cursor:pointer;font-weight:700;min-height:48px;transition:transform .08s}
-.btn:active{transform:scale(.97)}
-.btn:focus-visible,.home-link:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--green);outline-offset:2px}
-.btn-primary{background:var(--green);color:var(--ink)}
-.btn-ghost{background:transparent;color:var(--paper);border:2px solid var(--grey-mid)}
-.btn-ghost:hover{border-color:var(--green)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px;letter-spacing:.04em}
-input,select{width:100%;background:var(--grey);border:2px solid var(--grey-mid);color:var(--paper);border-radius:8px;padding:12px;min-height:48px}
-input::placeholder{color:#9a9a9a}
-kbd{background:var(--grey);border:1px solid var(--grey-mid);border-radius:4px;padding:1px 6px;font-size:.8rem}
+  :root{
+    --pink:#ff3cac; --purple:#a855f7; --orange:#ff8a00; --lime:#c6e03a;
+    --gold:#ffd23f; --bg1:#1a0b2e; --bg2:#2d0b3a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Poppins',system-ui,sans-serif;color:#fff;min-height:100vh;
+    background:radial-gradient(circle at 20% 20%,#3b0f4f 0%,transparent 45%),
+               radial-gradient(circle at 80% 80%,#4a1a0b 0%,transparent 45%),
+               linear-gradient(135deg,var(--bg1),var(--bg2));
+    overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:24px 16px 40px;
+  }
+  /* floating glow orbs */
+  .orb{position:fixed;border-radius:50%;filter:blur(70px);opacity:.55;z-index:-1;animation:float 14s ease-in-out infinite}
+  .o1{width:320px;height:320px;background:var(--pink);top:-80px;left:-80px}
+  .o2{width:280px;height:280px;background:var(--orange);bottom:-60px;right:-60px;animation-delay:-4s}
+  .o3{width:220px;height:220px;background:var(--purple);top:40%;left:70%;animation-delay:-8s}
+  .o4{width:200px;height:200px;background:var(--lime);top:60%;left:5%;animation-delay:-2s;opacity:.3}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.15)}}
 
-/* HOME */
-.hero{display:grid;gap:28px;grid-template-columns:1.1fr 1fr;align-items:center;margin-block:12px 32px}
-.hero h1{font-size:clamp(2.6rem,7vw,5.2rem);text-transform:uppercase;letter-spacing:.01em}
-.hero h1 span{color:var(--green)}
-.hero p{color:var(--muted);max-width:52ch;margin:14px 0 0}
-.sample{background:var(--green);color:var(--ink);border-radius:14px;padding:26px;display:grid;gap:10px}
-.sample .row{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px dashed rgba(65,64,66,.35);padding-bottom:10px}
-.sample .row:last-child{border:0;padding:0}
-.sample .em{font-size:2.2rem}
-.sample .ans{font-family:var(--display);font-size:1.3rem;text-transform:uppercase}
-.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.mode{background:var(--grey);border:2px solid var(--grey-mid);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:12px;text-align:left;color:var(--paper);cursor:pointer}
-.mode:hover,.mode:focus-visible{border-color:var(--green);outline:none}
-.mode .ico{font-size:2.2rem}
-.mode h2{font-size:1.9rem;text-transform:uppercase}
-.mode p{margin:0;color:var(--muted)}
-.mode .go{margin-top:auto;color:var(--green);font-weight:700}
+  header{text-align:center;margin-bottom:18px}
+  .logo{height:80px;border-radius:10px;box-shadow:0 0 25px rgba(198,224,58,.45);margin-bottom:12px;}
+  h1{
+    font-size:clamp(1.8rem,5vw,3rem);font-weight:800;letter-spacing:1px;
+    background:linear-gradient(90deg,var(--pink),var(--gold),var(--lime),var(--orange),var(--pink));
+    background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shine 6s linear infinite;filter:drop-shadow(0 0 12px rgba(255,60,172,.6));
+  }
+  @keyframes shine{to{background-position:300% center}}
+  .sub{opacity:.85;margin-top:4px}
 
-/* SETUP */
-.panel{background:var(--grey);border-radius:14px;padding:24px;display:grid;gap:18px;max-width:720px;width:100%;margin:0 auto}
-.panel h2{font-size:2.2rem;text-transform:uppercase}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.teams{display:grid;gap:10px}
-.team-row{display:flex;gap:8px}
-.team-row input{flex:1}
-.team-row button{min-width:48px}
-.note{font-size:.9rem;color:var(--muted);margin:0}
-.code-big{font-family:var(--display);font-size:2.4rem;letter-spacing:.2em;color:var(--green)}
+  /* scoreboard */
+  .stats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:14px 0}
+  .pill{padding:8px 18px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);
+        backdrop-filter:blur(8px);font-weight:600;box-shadow:0 0 14px rgba(168,85,247,.35)}
+  .pill b{color:var(--gold)}
 
-/* PLAY (host) */
-.stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;flex:1}
-.board{display:flex;flex-direction:column;gap:16px;min-width:0}
-.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.chip{background:var(--grey);border:1px solid var(--grey-mid);border-radius:999px;padding:6px 14px;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
-.count{font-variant-numeric:tabular-nums;color:var(--muted)}
-.card{background:var(--green);color:var(--ink);border-radius:18px;padding:clamp(18px,4vw,40px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:clamp(260px,46vh,520px);position:relative;text-align:center}
-.emoji{font-size:clamp(3.6rem,12vw,9rem);line-height:1.1;letter-spacing:.06em;word-break:break-word}
-.hint{font-size:clamp(1rem,2.2vw,1.35rem);background:var(--paper);color:var(--ink);border-radius:10px;padding:10px 16px;max-width:60ch}
-.answer{font-family:var(--display);font-size:clamp(2rem,6vw,4rem);text-transform:uppercase;color:var(--ink);background:var(--paper);padding:6px 22px;border-radius:10px;animation:pop .35s ease-out}
-@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
-.timer{position:absolute;top:14px;right:16px;width:74px;height:74px}
-.timer svg{width:100%;height:100%;transform:rotate(-90deg)}
-.timer .t-bg{stroke:rgba(65,64,66,.2)}
-.timer .t-fg{stroke:var(--ink);transition:stroke-dashoffset .25s linear}
-.timer .t-num{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:1.6rem;font-variant-numeric:tabular-nums}
-.timer.low .t-fg{stroke:#B3261E}
-.timer.low .t-num{color:#B3261E}
-.controls{display:flex;flex-wrap:wrap;gap:10px}
-.controls .btn{flex:1 1 140px}
-.award{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.award .lbl{color:var(--muted);font-size:.9rem;width:100%}
-.award .btn{flex:1 1 140px}
-.side{background:var(--grey);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px;align-self:start}
-.side h3{font-size:1.4rem;text-transform:uppercase;color:var(--green)}
-.score-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--grey-deep)}
-.score-row.lead{outline:2px solid var(--green)}
-.score-row .nm{min-width:0;overflow-wrap:anywhere}
-.score-row .pts{font-family:var(--display);font-size:1.8rem;font-variant-numeric:tabular-nums;color:var(--green)}
-.score-row .adj{display:flex;gap:4px}
-.score-row .adj button{background:none;border:1px solid var(--grey-mid);color:var(--muted);border-radius:6px;width:30px;height:30px;cursor:pointer}
-.keys{font-size:.82rem;color:var(--muted);line-height:1.9}
+  /* main card */
+  .card{
+    width:min(720px,100%);padding:22px;border-radius:26px;position:relative;
+    background:rgba(26,11,46,.92);border:1px solid rgba(255,255,255,.18);
+  }
+  .card::before{ /* animated rainbow glow border */
+    content:"";position:absolute;inset:-3px;border-radius:28px;z-index:-1;
+    background:conic-gradient(from var(--a,0deg),var(--pink),var(--orange),var(--gold),var(--lime),var(--purple),var(--pink));
+    filter:blur(10px);animation:spin 5s linear infinite;
+  }
+  @property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+  @keyframes spin{to{--a:360deg}}
 
-/* PHONE */
-.phone{max-width:520px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px}
-.phone .card{min-height:220px}
-.phone .emoji{font-size:clamp(3.2rem,16vw,5rem)}
-.guess-row{display:flex;gap:8px}
-.guess-row input{flex:1;min-width:0}
-.feedback{min-height:1.5em;font-weight:700;text-align:center}
-.feedback.ok{color:var(--good)}
-.feedback.no{color:var(--bad)}
-.stat{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-variant-numeric:tabular-nums}
-.stat b{color:var(--green);font-family:var(--display);font-size:1.4rem;font-weight:normal}
+  .frame{
+    background:#fff;border-radius:18px;height:340px;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;box-shadow:0 0 30px rgba(255,210,63,.45),inset 0 0 0 4px rgba(255,60,172,.25);
+  }
+  .frame img{max-width:100%;max-height:100%;object-fit:contain;animation:pop .55s cubic-bezier(.2,1.4,.4,1)}
+  .frame img.blur{filter:blur(14px) saturate(1.4)}
+  @keyframes pop{from{transform:scale(.6) rotate(-4deg);opacity:0}to{transform:scale(1);opacity:1}}
 
-/* END */
-.end{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;margin-top:10px}
-.end h2{font-size:clamp(2.4rem,7vw,4.6rem);text-transform:uppercase}
-.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;width:100%;max-width:720px}
-.pod{flex:1;background:var(--grey);border-radius:12px 12px 0 0;padding:14px 8px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;min-width:0}
-.pod.p1{background:var(--green);color:var(--ink);min-height:220px}
-.pod.p2{min-height:160px}
-.pod.p3{min-height:120px}
-.pod .place{font-family:var(--display);font-size:2.4rem}
-.pod .nm{overflow-wrap:anywhere;font-weight:700}
-.pod .pts{font-variant-numeric:tabular-nums}
-.big-score{font-family:var(--display);font-size:clamp(5rem,24vw,9rem);color:var(--green);line-height:1}
-.recap{width:100%;max-width:720px;text-align:left;background:var(--grey);border-radius:12px;padding:16px;display:grid;gap:6px;max-height:320px;overflow:auto}
-.recap div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--grey-mid);padding-bottom:6px}
-.recap span:first-child{font-size:1.4rem}
-.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
-.confetti i{position:absolute;top:-20px;width:10px;height:16px;animation:fall linear forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-footer{margin-top:auto;padding-top:24px;color:#8d8d8d;font-size:.8rem;text-align:center}
+  .q{display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px;font-weight:600}
+  .dots{display:flex;gap:6px;flex-wrap:wrap}
+  .dot{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.25)}
+  .dot.now{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+  .dot.ok{background:var(--lime);box-shadow:0 0 8px var(--lime)}
+  .dot.miss{background:var(--pink);box-shadow:0 0 8px var(--pink)}
 
-@media (max-width:860px){
-  .hero{grid-template-columns:1fr}
-  .stage{grid-template-columns:1fr}
-  .side{order:2}
-}
-@media (max-width:560px){
-  .modes,.grid2{grid-template-columns:1fr}
-  .timer{width:58px;height:58px;top:10px;right:10px}
-  .timer .t-num{font-size:1.25rem}
-}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  .hint{min-height:28px;text-align:center;letter-spacing:6px;font-size:1.25rem;font-weight:800;color:var(--gold);
+        text-shadow:0 0 10px rgba(255,210,63,.8);margin:6px 0}
+  .answer{min-height:44px;text-align:center;font-size:1.9rem;font-weight:800;color:var(--lime);
+          text-shadow:0 0 14px var(--lime),0 0 30px rgba(198,224,58,.6)}
+  .answer.show{animation:pop .5s}
+  .def{text-align:center;opacity:.9;min-height:24px;font-size:.95rem}
+
+  .guess{display:flex;gap:10px;margin:14px 0}
+  .guess input{
+    flex:1;padding:14px 18px;border-radius:14px;border:2px solid rgba(255,255,255,.25);background:rgba(0,0,0,.25);
+    color:#fff;font:600 1rem 'Poppins',sans-serif;outline:none;transition:.2s
+  }
+  .guess input:focus{border-color:var(--pink);box-shadow:0 0 16px rgba(255,60,172,.6)}
+  .shake{animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+  .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  button{
+    border:none;cursor:pointer;padding:12px 20px;border-radius:14px;font:700 .95rem 'Poppins',sans-serif;color:#fff;
+    transition:transform .15s,box-shadow .2s;
+  }
+  button:hover{transform:translateY(-3px) scale(1.04)}
+  .b-check{background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 0 18px rgba(255,60,172,.6)}
+  .b-hint{background:linear-gradient(135deg,var(--gold),var(--orange));color:#2d0b3a;box-shadow:0 0 18px rgba(255,170,0,.6)}
+  .b-reveal{background:linear-gradient(135deg,var(--purple),#6d28d9);box-shadow:0 0 18px rgba(168,85,247,.6)}
+  .b-next{background:linear-gradient(135deg,var(--lime),#7cb518);color:#1a0b2e;box-shadow:0 0 18px rgba(198,224,58,.7)}
+  .b-mode{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3)}
+
+  .timer{height:8px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:14px}
+  .timer i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--lime),var(--gold),var(--pink));transition:width 1s linear}
+
+  /* end screen */
+  .end{display:none;text-align:center;padding:30px 10px}
+  .end h2{font-size:2.2rem;color:var(--gold);text-shadow:0 0 18px var(--gold)}
+  .end p{font-size:1.2rem;margin:12px 0 20px}
+  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+  footer{margin-top:22px;opacity:.6;font-size:.8rem}
+  @media(max-width:520px){.frame{height:240px}.answer{font-size:1.4rem}}
 </style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div><div class="orb o4"></div>
+<canvas id="confetti"></canvas>
 
-<div class="wrap">
-  <header class="bar">
-    <div class="brand">Centennial College · <b>PMO / SMO Day</b></div>
-    <button class="home-link" id="homeBtn" type="button">← Main menu</button>
-  </header>
+<header>
+  <img class="logo" src="images/logo.png" alt="Centennial College logo" />
+  <h1>PMO Picture Pictionary</h1>
+  <p class="sub">Look at the picture ✨ Guess the Project Management term!</p>
+</header>
 
-  <!-- HOME -->
-  <section id="vHome">
-    <div class="hero">
-      <div>
-        <div class="eyebrow">Game time</div>
-        <h1>Emoji Project <span>Pictionary</span></h1>
-        <p>Read the emojis, shout the project or IT term. Play as teams on the big screen, or on your own phone.</p>
-      </div>
-      <div class="sample" aria-label="Example puzzles">
-        <div class="row"><span class="em">🐍📈</span><span class="ans">Scope creep</span></div>
-        <div class="row"><span class="em">🔥🧯</span><span class="ans">Firefighting</span></div>
-        <div class="row"><span class="em">🐇🕳️</span><span class="ans">?</span></div>
-      </div>
-    </div>
-    <div class="modes">
-      <button class="mode" id="pickHost" type="button">
-        <span class="ico">🖥️</span>
-        <h2>Big screen</h2>
-        <p>One host drives the game on the meeting-room screen or a Teams share. Teams shout answers; the host awards points.</p>
-        <span class="go">Set up teams →</span>
-      </button>
-      <button class="mode" id="pickPhone" type="button">
-        <span class="ico">📱</span>
-        <h2>Phone</h2>
-        <p>Everyone opens this link on their own phone, enters the same game code, and types their guesses. Highest score wins.</p>
-        <span class="go">Join a game →</span>
-      </button>
-    </div>
-  </section>
-
-  <!-- HOST SETUP -->
-  <section id="vSetup" hidden>
-    <form class="panel" id="setupForm">
-      <div><div class="eyebrow">Big screen</div><h2>Set up the game</h2></div>
-      <div>
-        <label>Teams (2 to 4)</label>
-        <div class="teams" id="teamList"></div>
-        <button class="btn btn-ghost" id="addTeam" type="button" style="margin-top:10px">+ Add team</button>
-      </div>
-      <div class="grid2">
-        <div><label for="hRounds">Rounds</label>
-          <select id="hRounds"><option>10</option><option selected>15</option><option>20</option><option>25</option><option value="999">All puzzles</option></select></div>
-        <div><label for="hTime">Seconds per puzzle</label>
-          <select id="hTime"><option>30</option><option selected>45</option><option>60</option><option>90</option></select></div>
-      </div>
-      <p class="note">Scoring: 3 points for a correct answer, 1 point if the hint was shown. Each round the host clicks the team that got it.</p>
-      <button class="btn btn-primary" type="submit">Start game ▶</button>
-    </form>
-  </section>
-
-  <!-- HOST PLAY -->
-  <section id="vHost" hidden>
-    <div class="stage">
-      <div class="board">
-        <div class="meta">
-          <span class="chip" id="hCat">PM lingo</span>
-          <span class="count" id="hCount">Puzzle 1 of 15</span>
-        </div>
-        <div class="card">
-          <div class="timer" id="hTimer">
-            <svg viewBox="0 0 80 80"><circle class="t-bg" cx="40" cy="40" r="34" fill="none" stroke-width="7"/><circle class="t-fg" id="hRing" cx="40" cy="40" r="34" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="0"/></svg>
-            <div class="t-num" id="hNum">45</div>
-          </div>
-          <div class="emoji" id="hEmoji">🐍📈</div>
-          <div class="hint" id="hHint" hidden></div>
-          <div class="answer" id="hAnswer" hidden></div>
-        </div>
-        <div class="controls">
-          <button class="btn btn-ghost" id="hHintBtn" type="button">💡 Show hint</button>
-          <button class="btn btn-ghost" id="hPauseBtn" type="button">⏸ Pause</button>
-          <button class="btn btn-primary" id="hRevealBtn" type="button">Reveal answer</button>
-          <button class="btn btn-ghost" id="hNextBtn" type="button">Next ▶</button>
-        </div>
-        <div class="award" id="hAward"></div>
-      </div>
-      <aside class="side">
-        <h3>Scoreboard</h3>
-        <div id="hScores" style="display:grid;gap:8px"></div>
-        <div class="keys"><kbd>Space</kbd> reveal · <kbd>H</kbd> hint · <kbd>P</kbd> pause · <kbd>→</kbd> next · <kbd>1</kbd>–<kbd>4</kbd> award team</div>
-        <button class="btn btn-ghost" id="hEndBtn" type="button">End game now</button>
-      </aside>
-    </div>
-  </section>
-
-  <!-- PHONE JOIN -->
-  <section id="vJoin" hidden>
-    <form class="panel phone" id="joinForm" style="max-width:520px">
-      <div><div class="eyebrow">Phone</div><h2>Join the game</h2></div>
-      <div><label for="pName">Your name</label><input id="pName" maxlength="24" placeholder="e.g. Priya" required autocomplete="off"></div>
-      <div><label for="pCode">Game code (ask your host)</label><input id="pCode" maxlength="12" placeholder="e.g. PMO26" required autocomplete="off" style="text-transform:uppercase"></div>
-      <div class="grid2">
-        <div><label for="pRounds">Puzzles</label><select id="pRounds"><option>8</option><option selected>12</option><option>16</option></select></div>
-        <div><label for="pTime">Seconds each</label><select id="pTime"><option>20</option><option selected>30</option><option>45</option></select></div>
-      </div>
-      <p class="note">Everyone with the same code and settings gets the same puzzles in the same order. 3 points per correct guess, 1 if you used the hint. Spelling does not have to be perfect.</p>
-      <button class="btn btn-primary" type="submit">Let's go ▶</button>
-    </form>
-  </section>
-
-  <!-- PHONE PLAY -->
-  <section id="vPhone" hidden>
-    <div class="phone">
-      <div class="stat"><span id="pWho">Priya</span><span>Score <b id="pScore">0</b></span></div>
-      <div class="meta"><span class="chip" id="pCat">PM lingo</span><span class="count" id="pCount">1 / 12</span></div>
-      <div class="card">
-        <div class="timer" id="pTimer">
-          <svg viewBox="0 0 80 80"><circle class="t-bg" cx="40" cy="40" r="34" fill="none" stroke-width="7"/><circle class="t-fg" id="pRing" cx="40" cy="40" r="34" fill="none" stroke-width="7" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="0"/></svg>
-          <div class="t-num" id="pNum">30</div>
-        </div>
-        <div class="emoji" id="pEmoji">🐍📈</div>
-        <div class="hint" id="pHint" hidden></div>
-        <div class="answer" id="pAnswer" hidden></div>
-      </div>
-      <form class="guess-row" id="guessForm">
-        <input id="pGuess" placeholder="Type your guess" autocomplete="off" autocapitalize="off" spellcheck="false">
-        <button class="btn btn-primary" type="submit">Guess</button>
-      </form>
-      <div class="feedback" id="pFeedback"></div>
-      <div class="controls">
-        <button class="btn btn-ghost" id="pHintBtn" type="button">💡 Hint</button>
-        <button class="btn btn-ghost" id="pSkipBtn" type="button">Skip</button>
-        <button class="btn btn-primary" id="pNextBtn" type="button" hidden>Next ▶</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- END -->
-  <section id="vEnd" hidden>
-    <div class="end" id="endBody"></div>
-  </section>
-
-  <footer>PMO / SMO Day · Emoji Project Pictionary</footer>
+<div class="stats">
+  <span class="pill">⭐ Score: <b id="score">0</b></span>
+  <span class="pill">🔥 Streak: <b id="streak">0</b></span>
+  <span class="pill">⏱️ <b id="time">30</b>s</span>
 </div>
-<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<div class="card">
+  <div id="game">
+    <div class="frame"><img id="pic" alt="Guess the PMO term" /></div>
+    <div class="q"><span id="count">Picture 1 / 12</span><div class="dots" id="dots"></div></div>
+    <div class="hint" id="hint"></div>
+    <div class="answer" id="answer"></div>
+    <div class="def" id="def"></div>
+    <div class="guess">
+      <input id="guess" placeholder="Type your guess and press Enter…" autocomplete="off" />
+    </div>
+    <div class="btns">
+      <button class="b-check" onclick="check()">✅ Check</button>
+      <button class="b-hint" onclick="hint()">💡 Hint</button>
+      <button class="b-reveal" onclick="reveal()">👀 Reveal</button>
+      <button class="b-next" onclick="next()">➡️ Next</button>
+      <button class="b-mode" id="mode" onclick="toggleBlur()">🌫️ Blur mode: Off</button>
+    </div>
+    <div class="timer"><i id="bar"></i></div>
+  </div>
+  <div class="end" id="end">
+    <h2>🎉 Game Over! 🎉</h2>
+    <p>You scored <b id="final"></b> — PMO superstar!</p>
+    <button class="b-next" onclick="start()">🔁 Play Again</button>
+  </div>
+</div>
+<footer>Centennial College · PMO / Shared Services</footer>
 
 <script>
-(function(){
-"use strict";
-
-/* ---------- PUZZLES (edit here) ----------
-   e = emojis, a = answer shown, alt = other accepted answers, h = hint, c = category */
-var PUZZLES = [
-  {e:"🐍📈", a:"Scope creep", alt:["scope creeping"], h:"The project quietly grows bigger without approval", c:"PM lingo"},
-  {e:"🔥🧯", a:"Firefighting", alt:["fire fighting","putting out fires","fire fight"], h:"Spending the day on urgent problems instead of planned work", c:"PM lingo"},
-  {e:"🥅➡️🏃", a:"Moving the goalposts", alt:["move the goalposts","moving goalposts","moving the goal posts"], h:"Changing what success means halfway through", c:"PM lingo"},
-  {e:"🛣️🪨", a:"Milestone", alt:["milestones"], h:"A key checkpoint on the schedule", c:"PM lingo"},
-  {e:"🔴🟡🟢📊", a:"RAG status", alt:["rag","rag report","traffic light status","red amber green"], h:"The colour-coded health check in a status report", c:"PM lingo"},
-  {e:"✍️✅", a:"Sign-off", alt:["sign off","signoff","approval"], h:"The sponsor formally approves the deliverable", c:"PM lingo"},
-  {e:"💰📈🚨", a:"Over budget", alt:["budget overrun","cost overrun","overbudget","over-budget"], h:"Spending more money than planned", c:"PM lingo"},
-  {e:"🏃💨🔁", a:"Sprint", alt:["sprints","agile sprint"], h:"A short, fixed work cycle in Agile", c:"PM lingo"},
-  {e:"🟢🚀", a:"Go-live", alt:["go live","golive","launch","going live"], h:"The day the new system is switched on for real", c:"PM lingo"},
-  {e:"🦆🦆🦆📏", a:"Ducks in a row", alt:["get your ducks in a row","ducks in row"], h:"Get everything organised before you start", c:"PM lingo"},
-  {e:"📝🎓🔙", a:"Lessons learned", alt:["lessons learnt","lesson learned"], h:"What we write down at project close so we don't repeat mistakes", c:"PM lingo"},
-  {e:"⏰💀", a:"Deadline", alt:["deadlines","dead line"], h:"The date you must deliver by", c:"PM lingo"},
-  {e:"🐘🛋️", a:"Elephant in the room", alt:["the elephant in the room"], h:"The obvious problem nobody wants to mention", c:"Office speak"},
-  {e:"🍎🌳👇", a:"Low-hanging fruit", alt:["low hanging fruit"], h:"Quick, easy wins", c:"Office speak"},
-  {e:"🐇🕳️", a:"Rabbit hole", alt:["down the rabbit hole","going down a rabbit hole"], h:"Getting lost way too deep in a side issue", c:"Office speak"},
-  {e:"🧊⛰️", a:"Tip of the iceberg", alt:["the tip of the iceberg"], h:"A small visible part of a much bigger problem", c:"Office speak"},
-  {e:"👨‍🍳👩‍🍳🧑‍🍳🍲", a:"Too many cooks", alt:["too many cooks spoil the broth","too many cooks in the kitchen"], h:"Too many people involved ruins the result", c:"Office speak"},
-  {e:"🧠⛈️", a:"Brainstorm", alt:["brain storm","brainstorming"], h:"Throwing out lots of ideas as a group", c:"Office speak"},
-  {e:"⭕🔙", a:"Circle back", alt:["circle back later","circling back"], h:"\"Let's come back to this later\"", c:"Office speak"},
-  {e:"🔥🌊", a:"Boil the ocean", alt:["boiling the ocean"], h:"Trying to do everything at once", c:"Office speak"},
-  {e:"↩️👥💥", a:"Reply all", alt:["reply-all","reply to all"], h:"The email button that floods everyone's inbox", c:"Office speak"},
-  {e:"🔌🔄", a:"Turn it off and on again", alt:["restart","reboot","off and on again","turn it off and on","turn off and on"], h:"The Service Desk's number one fix", c:"IT & Service Desk"},
-  {e:"🎣📧", a:"Phishing email", alt:["phishing","phish","phishing scam"], h:"A fake email trying to steal your password", c:"IT & Service Desk"},
-  {e:"🔑🔄", a:"Password reset", alt:["reset password","password change"], h:"The most common call to the Service Desk", c:"IT & Service Desk"},
-  {e:"🎫📥", a:"Ticket queue", alt:["queue","ticket backlog","ticket inbox","tickets"], h:"Where all the incidents wait for an agent", c:"IT & Service Desk"},
-  {e:"🐛🔧", a:"Bug fix", alt:["bugfix","fix the bug","debugging","patch"], h:"Repairing an error in the software", c:"IT & Service Desk"},
-  {e:"📱🔢🔐", a:"MFA", alt:["multi factor authentication","multifactor authentication","2fa","two factor authentication","two factor"], h:"The code on your phone after your password", c:"IT & Service Desk"},
-  {e:"🖥️💙💀", a:"Blue screen of death", alt:["bsod","blue screen"], h:"Windows has crashed", c:"IT & Service Desk"},
-  {e:"🏓📱", a:"Ping", alt:["ping me"], h:"\"Just ___ me on Teams\"", c:"IT & Service Desk"},
-  {e:"☁️💾", a:"Cloud backup", alt:["cloud storage","backup","onedrive"], h:"Saving copies of files online", c:"IT & Service Desk"}
+/* ===== EDIT HERE: one line per picture ===== */
+const CARDS = [
+  {img:"images/action-item.webp",        answer:"Action Item",         alt:["action items","action"],          def:"A task assigned to someone with a due date."},
+  {img:"images/behind-schedule.webp",    answer:"Behind Schedule",     alt:["late","delayed","delay"],         def:"The project is running later than planned."},
+  {img:"images/budget.webp",             answer:"Budget",              alt:["project budget","cost","funding"],def:"The money approved to deliver the project."},
+  {img:"images/deadline.webp",           answer:"Deadline",            alt:["due date"],                       def:"The date by which work must be completed."},
+  {img:"images/dependencies.jpg",       answer:"Dependencies",        alt:["dependency","domino effect"],     def:"Tasks that rely on other tasks being done first."},
+  {img:"images/milestone.webp",          answer:"Milestone",           alt:["milestones"],                     def:"A key checkpoint or achievement in the project."},
+  {img:"images/project-dashboard.webp",  answer:"Project Dashboard",   alt:["dashboard","power bi","report"],  def:"A visual summary of project status and KPIs."},
+  {img:"images/project-integration.webp",answer:"Project Integration", alt:["integration","teamwork","collaboration"], def:"Bringing all project pieces together as one."},
+  {img:"images/project-roadmap.jpg",    answer:"Project Roadmap",     alt:["roadmap"],                        def:"A high-level plan showing the journey and goals."},
+  {img:"images/rag.webp",                answer:"RAG Status",          alt:["rag","red amber green","traffic light"], def:"Red / Amber / Green project health rating."},
+  {img:"images/risk-mitigation.webp",    answer:"Risk Mitigation",     alt:["risk","risks","risk management"], def:"Actions taken to reduce the impact of risks."},
+  {img:"images/stakeholders.webp",       answer:"Stakeholders",        alt:["stakeholder","stakeholder meeting"], def:"People who are affected by or invested in the project."}
 ];
+const SECONDS = 30;
+/* =========================================== */
 
-/* ---------- helpers ---------- */
-var $ = function(id){return document.getElementById(id);};
-var views = ["vHome","vSetup","vHost","vJoin","vPhone","vEnd"];
-function show(v){ views.forEach(function(x){ $(x).hidden = (x!==v); }); $("homeBtn").hidden = (v==="vHome"); window.scrollTo(0,0); }
-function store(k,v){ try{ localStorage.setItem("epp_"+k, JSON.stringify(v)); }catch(e){} }
-function load(k,d){ try{ var v = localStorage.getItem("epp_"+k); return v? JSON.parse(v) : d; }catch(e){ return d; } }
-function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];}); }
-function hash(str){ var h=1779033703^str.length; for(var i=0;i<str.length;i++){ h=Math.imul(h^str.charCodeAt(i),3432918353); h=h<<13|h>>>19; } return h>>>0; }
-function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; var t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
-function shuffled(n, seedStr){ var r = rng(hash(seedStr)); var a=[]; for(var i=0;i<n;i++)a.push(i); for(var j=n-1;j>0;j--){ var k=Math.floor(r()*(j+1)); var t=a[j];a[j]=a[k];a[k]=t; } return a; }
-function norm(s){ return String(s).toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]/g,""); }
-function lev(a,b){ if(a===b)return 0; var m=a.length,n=b.length; if(!m)return n; if(!n)return m; var p=[],c,i,j; for(j=0;j<=n;j++)p[j]=j; for(i=1;i<=m;i++){ c=[i]; for(j=1;j<=n;j++){ c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1)); } p=c; } return p[n]; }
-function isCorrect(guess, pz){
-  var g = norm(guess); if(g.length<2) return false;
-  var all = [pz.a].concat(pz.alt||[]);
-  for(var i=0;i<all.length;i++){
-    var t = norm(all[i]);
-    if(g===t) return true;
-    var tol = t.length<=4 ? 0 : Math.max(1, Math.floor(t.length/6));
-    if(lev(g,t)<=tol) return true;
+let deck=[],i=0,score=0,streak=0,hints=0,done=false,blur=false,t=SECONDS,tick,results=[];
+const $=id=>document.getElementById(id);
+const norm=s=>s.toLowerCase().replace(/[^a-z0-9 ]/g,"").trim();
+
+function start(){
+  deck=[...CARDS].sort(()=>Math.random()-.5);
+  i=0;score=0;streak=0;results=[];
+  $("end").style.display="none";$("game").style.display="block";
+  load();
+}
+function load(){
+  const c=deck[i];done=false;hints=0;
+  const pic=$("pic");pic.classList.remove("blur");void pic.offsetWidth;
+  pic.src=c.img;if(blur)pic.classList.add("blur");
+  $("answer").textContent="";$("def").textContent="";$("guess").value="";
+  $("hint").textContent=c.answer.replace(/[A-Za-z]/g,"_");
+  $("count").textContent=`Picture ${i+1} / ${deck.length}`;
+  $("dots").innerHTML=deck.map((_,k)=>`<span class="dot ${k===i?"now":results[k]||""}"></span>`).join("");
+  $("score").textContent=score;$("streak").textContent=streak;
+  $("guess").focus();startTimer();
+}
+function startTimer(){
+  clearInterval(tick);t=SECONDS;$("time").textContent=t;$("bar").style.width="100%";
+  tick=setInterval(()=>{t--;$("time").textContent=t;$("bar").style.width=(t/SECONDS*100)+"%";
+    if(t<=0){clearInterval(tick);reveal();}},1000);
+}
+function check(){
+  if(done)return;const g=norm($("guess").value),c=deck[i];
+  if(!g)return;
+  if([c.answer,...c.alt].map(norm).includes(g)){
+    done=true;clearInterval(tick);streak++;
+    const pts=Math.max(10-hints*3,4)+Math.floor(t/5)+(streak>=3?5:0);
+    score+=pts;results[i]="ok";show(`🎉 ${c.answer} (+${pts})`);confetti();
+  }else{
+    const inp=$("guess");inp.classList.remove("shake");void inp.offsetWidth;inp.classList.add("shake");
   }
-  return false;
 }
-var audioCtx=null;
-function beep(freq,dur){ try{ audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)(); var o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=freq; o.type="triangle"; g.gain.value=.08; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+dur); o.stop(audioCtx.currentTime+dur); }catch(e){} }
-function confetti(){
-  var box=$("confetti"); box.innerHTML="";
-  if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  var cols=["#D4DF38","#FFFFFF","#C8C9C7","#E8EF8A"];
-  for(var i=0;i<90;i++){ var el=document.createElement("i"); el.style.left=(Math.random()*100)+"vw"; el.style.background=cols[i%cols.length]; el.style.animationDuration=(2+Math.random()*2.5)+"s"; el.style.animationDelay=(Math.random()*.8)+"s"; box.appendChild(el); }
-  setTimeout(function(){box.innerHTML="";},5500);
+function hint(){
+  if(done)return;const a=deck[i].answer;hints++;
+  let shown=0;
+  $("hint").textContent=a.split("").map(ch=>/[A-Za-z]/.test(ch)?(shown++<hints*2?ch:"_"):ch).join("");
+  if(blur&&hints===1)$("pic").classList.remove("blur");
 }
+function reveal(){
+  if(done)return;done=true;clearInterval(tick);streak=0;results[i]="miss";
+  show(deck[i].answer);
+}
+function show(txt){
+  $("pic").classList.remove("blur");
+  const a=$("answer");a.textContent=txt;a.classList.remove("show");void a.offsetWidth;a.classList.add("show");
+  $("def").textContent=deck[i].def;$("hint").textContent="";
+  $("score").textContent=score;$("streak").textContent=streak;
+  $("dots").children[i].className="dot "+results[i];
+}
+function next(){
+  if(!done){results[i]="miss";streak=0;}
+  i++;
+  if(i>=deck.length){clearInterval(tick);$("game").style.display="none";$("end").style.display="block";
+    $("final").textContent=score+" points";confetti(250);return;}
+  load();
+}
+function toggleBlur(){blur=!blur;$("mode").textContent="🌫️ Blur mode: "+(blur?"On":"Off");
+  if(!done)$("pic").classList.toggle("blur",blur);}
+$("guess").addEventListener("keydown",e=>{if(e.key==="Enter")done?next():check();});
 
-/* ---------- timer (shared) ---------- */
-function Timer(ringId, numId, wrapId, onEnd){
-  this.ring=$(ringId); this.num=$(numId); this.wrap=$(wrapId); this.onEnd=onEnd; this.iv=null; this.total=0; this.left=0; this.paused=false;
+/* glowing confetti */
+function confetti(n=120){
+  const cv=$("confetti"),ctx=cv.getContext("2d");cv.width=innerWidth;cv.height=innerHeight;
+  const cols=["#ff3cac","#ffd23f","#c6e03a","#ff8a00","#a855f7"];
+  const p=Array.from({length:n},()=>({x:cv.width/2,y:cv.height/2,vx:(Math.random()-.5)*16,vy:Math.random()*-16-4,
+    s:Math.random()*7+4,c:cols[Math.floor(Math.random()*cols.length)],r:Math.random()*6}));
+  let f=0;(function draw(){ctx.clearRect(0,0,cv.width,cv.height);
+    p.forEach(q=>{q.x+=q.vx;q.y+=q.vy;q.vy+=.45;q.r+=.2;ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.r);
+      ctx.shadowBlur=12;ctx.shadowColor=q.c;ctx.fillStyle=q.c;ctx.fillRect(-q.s/2,-q.s/2,q.s,q.s*.6);ctx.restore();});
+    if(++f<120)requestAnimationFrame(draw);else ctx.clearRect(0,0,cv.width,cv.height);})();
 }
-Timer.prototype.start=function(sec){ this.stop(); this.total=sec; this.left=sec; this.paused=false; this.end=Date.now()+sec*1000; var self=this; this.draw(); this.iv=setInterval(function(){self.tick();},200); };
-Timer.prototype.tick=function(){ if(this.paused)return; var l=Math.max(0,(this.end-Date.now())/1000); var prev=Math.ceil(this.left); this.left=l; var now=Math.ceil(l); if(now!==prev && now<=5 && now>0) beep(660,.12); this.draw(); if(l<=0){ this.stop(); beep(220,.5); this.onEnd(); } };
-Timer.prototype.draw=function(){ var frac=this.total? this.left/this.total : 0; this.ring.style.strokeDashoffset = (213.6*(1-frac)).toFixed(1); this.num.textContent=Math.ceil(this.left); this.wrap.classList.toggle("low", this.left<=5); };
-Timer.prototype.pause=function(){ if(!this.iv)return; if(this.paused){ this.end=Date.now()+this.left*1000; this.paused=false; } else { this.paused=true; } return this.paused; };
-Timer.prototype.stop=function(){ if(this.iv){clearInterval(this.iv); this.iv=null;} };
-
-/* ================= HOST MODE ================= */
-var H = null;
-var teamNames = load("teams", ["Team PMO","Team SMO"]);
-function renderTeamInputs(){
-  var box=$("teamList"); box.innerHTML="";
-  teamNames.forEach(function(n,i){
-    var row=document.createElement("div"); row.className="team-row";
-    row.innerHTML='<input id="team'+i+'" maxlength="24" aria-label="Team '+(i+1)+' name" value="'+esc(n)+'">'+(teamNames.length>2?'<button type="button" class="btn btn-ghost" aria-label="Remove team">✕</button>':'');
-    row.querySelector("input").addEventListener("input",function(e){ teamNames[i]=e.target.value; });
-    var rm=row.querySelector("button"); if(rm) rm.addEventListener("click",function(){ teamNames.splice(i,1); renderTeamInputs(); });
-    box.appendChild(row);
-  });
-  $("addTeam").hidden = teamNames.length>=4;
-}
-$("addTeam").addEventListener("click",function(){ if(teamNames.length<4){ teamNames.push("Team "+(teamNames.length+1)); renderTeamInputs(); } });
-$("setupForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var teams = teamNames.map(function(n,i){ return {name:(n||"").trim()||("Team "+(i+1)), score:0}; });
-  store("teams", teams.map(function(t){return t.name;}));
-  var rounds = Math.min(PUZZLES.length, parseInt($("hRounds").value,10));
-  var order = shuffled(PUZZLES.length, "host"+Date.now()).slice(0,rounds);
-  H = {teams:teams, order:order, i:0, sec:parseInt($("hTime").value,10), hint:false, revealed:false, awarded:-1, log:[]};
-  show("vHost"); hostRound();
-});
-var hTimer = new Timer("hRing","hNum","hTimer", function(){ hostReveal(); });
-function hostRound(){
-  var pz = PUZZLES[H.order[H.i]];
-  H.hint=false; H.revealed=false; H.awarded=-1;
-  $("hEmoji").textContent = pz.e;
-  $("hCat").textContent = pz.c;
-  $("hCount").textContent = "Puzzle "+(H.i+1)+" of "+H.order.length;
-  $("hHint").hidden=true; $("hAnswer").hidden=true;
-  $("hHintBtn").disabled=false; $("hRevealBtn").disabled=false; $("hPauseBtn").textContent="⏸ Pause"; $("hPauseBtn").disabled=false;
-  $("hNextBtn").textContent = (H.i===H.order.length-1) ? "Finish 🏁" : "Next ▶";
-  renderAward(); renderScores();
-  hTimer.start(H.sec);
-}
-function hostHint(){ if(H.revealed||H.hint)return; H.hint=true; var pz=PUZZLES[H.order[H.i]]; $("hHint").textContent="💡 "+pz.h; $("hHint").hidden=false; $("hHintBtn").disabled=true; renderAward(); }
-function hostReveal(){ if(H.revealed)return; H.revealed=true; hTimer.stop(); var pz=PUZZLES[H.order[H.i]]; $("hAnswer").textContent=pz.a; $("hAnswer").hidden=false; $("hRevealBtn").disabled=true; $("hPauseBtn").disabled=true; $("hHintBtn").disabled=true; }
-function hostAward(t){
-  if(t>=H.teams.length) return;
-  var pts = H.hint?1:3;
-  if(H.awarded===t){ H.teams[t].score-=pts; H.awarded=-1; }
-  else { if(H.awarded>=0) H.teams[H.awarded].score-=pts; H.teams[t].score+=pts; H.awarded=t; beep(880,.15); }
-  hostReveal(); renderAward(); renderScores();
-}
-function renderAward(){
-  var box=$("hAward"); var pts=H.hint?1:3;
-  box.innerHTML='<span class="lbl">Who got it? (+'+pts+' point'+(pts>1?'s':'')+')</span>';
-  H.teams.forEach(function(t,i){
-    var b=document.createElement("button"); b.type="button";
-    b.className="btn "+(H.awarded===i?"btn-primary":"btn-ghost");
-    b.textContent=(H.awarded===i?"✓ ":"")+t.name;
-    b.addEventListener("click",function(){hostAward(i);});
-    box.appendChild(b);
-  });
-}
-function renderScores(){
-  var box=$("hScores"); box.innerHTML="";
-  var max=Math.max.apply(null,H.teams.map(function(t){return t.score;}));
-  H.teams.forEach(function(t,i){
-    var r=document.createElement("div"); r.className="score-row"+(max>0&&t.score===max?" lead":"");
-    r.innerHTML='<span class="nm">'+(i+1)+'. '+esc(t.name)+'</span><span class="adj"><button type="button" aria-label="Minus one">−</button><button type="button" aria-label="Plus one">+</button></span><span class="pts">'+t.score+'</span>';
-    var bs=r.querySelectorAll("button");
-    bs[0].addEventListener("click",function(){ t.score--; renderScores(); });
-    bs[1].addEventListener("click",function(){ t.score++; renderScores(); });
-    box.appendChild(r);
-  });
-}
-function hostNext(){
-  var pz=PUZZLES[H.order[H.i]];
-  H.log.push({e:pz.e,a:pz.a,who:H.awarded>=0?H.teams[H.awarded].name:"—"});
-  if(H.i>=H.order.length-1){ hostEnd(); return; }
-  H.i++; hostRound();
-}
-function hostEnd(){
-  hTimer.stop();
-  if(H.log.length<H.i+1){ var pz=PUZZLES[H.order[H.i]]; H.log.push({e:pz.e,a:pz.a,who:H.awarded>=0?H.teams[H.awarded].name:"—"}); }
-  var ranked=H.teams.slice().sort(function(a,b){return b.score-a.score;});
-  var tie = ranked.length>1 && ranked[0].score===ranked[1].score;
-  var order=[1,0,2]; var html='<div class="eyebrow">Final scores</div><h2>'+(tie?"It's a tie! 🤝":esc(ranked[0].name)+" wins! 🏆")+'</h2><div class="podium">';
-  order.forEach(function(k){ var t=ranked[k]; if(!t)return; html+='<div class="pod p'+(k+1)+'"><span class="place">'+(k===0?"🥇":k===1?"🥈":"🥉")+'</span><span class="nm">'+esc(t.name)+'</span><span class="pts">'+t.score+' pts</span></div>'; });
-  html+='</div>';
-  if(ranked[3]) html+='<p class="note">4th: '+esc(ranked[3].name)+' · '+ranked[3].score+' pts</p>';
-  html+='<div class="recap">'+H.log.map(function(l){return '<div><span>'+l.e+'</span><span>'+esc(l.a)+'</span><span>'+esc(l.who)+'</span></div>';}).join("")+'</div>';
-  html+='<div class="controls" style="width:100%;max-width:720px"><button class="btn btn-primary" type="button" id="againHost">Play again</button><button class="btn btn-ghost" type="button" id="menuEnd">Main menu</button></div>';
-  $("endBody").innerHTML=html; show("vEnd"); confetti(); beep(523,.15); setTimeout(function(){beep(784,.3);},160);
-  $("againHost").addEventListener("click",function(){ renderTeamInputs(); show("vSetup"); });
-  $("menuEnd").addEventListener("click",function(){ show("vHome"); });
-}
-$("hHintBtn").addEventListener("click",hostHint);
-$("hRevealBtn").addEventListener("click",hostReveal);
-$("hNextBtn").addEventListener("click",hostNext);
-$("hEndBtn").addEventListener("click",hostEnd);
-$("hPauseBtn").addEventListener("click",function(){ var p=hTimer.pause(); $("hPauseBtn").textContent=p?"▶ Resume":"⏸ Pause"; });
-document.addEventListener("keydown",function(e){
-  if($("vHost").hidden || !H) return;
-  if(e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
-  if(e.key===" "){ e.preventDefault(); hostReveal(); }
-  else if(e.key==="h"||e.key==="H") hostHint();
-  else if(e.key==="p"||e.key==="P") $("hPauseBtn").click();
-  else if(e.key==="ArrowRight"||e.key==="PageDown") hostNext();
-  else if(/^[1-4]$/.test(e.key)) hostAward(parseInt(e.key,10)-1);
-});
-
-/* ================= PHONE MODE ================= */
-var P=null;
-$("pName").value = load("name","");
-$("pCode").value = load("code","PMO26");
-$("joinForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var name=$("pName").value.trim(), code=$("pCode").value.trim().toUpperCase();
-  if(!name||!code) return;
-  store("name",name); store("code",code);
-  var n=Math.min(PUZZLES.length, parseInt($("pRounds").value,10));
-  P={name:name, code:code, order:shuffled(PUZZLES.length,"code:"+code).slice(0,n), i:0, sec:parseInt($("pTime").value,10), score:0, hint:false, done:false, log:[]};
-  $("pWho").textContent=name; show("vPhone"); phoneRound();
-});
-var pTimer = new Timer("pRing","pNum","pTimer", function(){ phoneFinish(false,"⏰ Time's up!"); });
-function phoneRound(){
-  var pz=PUZZLES[P.order[P.i]]; P.hint=false; P.done=false;
-  $("pEmoji").textContent=pz.e; $("pCat").textContent=pz.c; $("pCount").textContent=(P.i+1)+" / "+P.order.length;
-  $("pHint").hidden=true; $("pAnswer").hidden=true; $("pFeedback").textContent=""; $("pFeedback").className="feedback";
-  $("pGuess").value=""; $("pGuess").disabled=false; $("guessForm").querySelector("button").disabled=false;
-  $("pHintBtn").hidden=false; $("pHintBtn").disabled=false; $("pSkipBtn").hidden=false; $("pNextBtn").hidden=true;
-  $("pScore").textContent=P.score;
-  pTimer.start(P.sec);
-  try{ $("pGuess").focus({preventScroll:true}); }catch(e){}
-}
-function phoneFinish(ok,msg){
-  if(P.done) return; P.done=true; pTimer.stop();
-  var pz=PUZZLES[P.order[P.i]]; var pts= ok ? (P.hint?1:3) : 0; P.score+=pts;
-  P.log.push({e:pz.e,a:pz.a,pts:pts});
-  $("pAnswer").textContent=pz.a; $("pAnswer").hidden=false;
-  $("pFeedback").textContent = ok ? ("✅ Correct! +"+pts) : msg;
-  $("pFeedback").className="feedback "+(ok?"ok":"no");
-  $("pGuess").disabled=true; $("guessForm").querySelector("button").disabled=true;
-  $("pHintBtn").hidden=true; $("pSkipBtn").hidden=true; $("pNextBtn").hidden=false;
-  $("pNextBtn").textContent = P.i===P.order.length-1 ? "See my score 🏁" : "Next ▶";
-  $("pScore").textContent=P.score;
-  if(ok) beep(880,.15);
-  try{ $("pNextBtn").focus({preventScroll:true}); }catch(e){}
-}
-$("guessForm").addEventListener("submit",function(e){
-  e.preventDefault(); if(P.done) return;
-  var g=$("pGuess").value; if(!g.trim()) return;
-  var pz=PUZZLES[P.order[P.i]];
-  if(isCorrect(g,pz)) phoneFinish(true);
-  else { $("pFeedback").textContent="❌ Not quite, try again"; $("pFeedback").className="feedback no"; $("pGuess").select(); }
-});
-$("pHintBtn").addEventListener("click",function(){ if(P.done||P.hint)return; P.hint=true; $("pHint").textContent="💡 "+PUZZLES[P.order[P.i]].h; $("pHint").hidden=false; $("pHintBtn").disabled=true; });
-$("pSkipBtn").addEventListener("click",function(){ phoneFinish(false,"⏭ Skipped"); });
-$("pNextBtn").addEventListener("click",function(){ if(P.i>=P.order.length-1){ phoneEnd(); } else { P.i++; phoneRound(); } });
-function phoneEnd(){
-  var max=P.order.length*3, right=P.log.filter(function(l){return l.pts>0;}).length;
-  var html='<div class="eyebrow">'+esc(P.name)+' · code '+esc(P.code)+'</div><div class="big-score">'+P.score+'</div><h2>points</h2><p class="note">'+right+' of '+P.order.length+' correct · best possible '+max+'. Shout your score to the host!</p>';
-  html+='<div class="recap">'+P.log.map(function(l){return '<div><span>'+l.e+'</span><span>'+esc(l.a)+'</span><span>'+(l.pts?"+"+l.pts:"—")+'</span></div>';}).join("")+'</div>';
-  html+='<div class="controls" style="width:100%;max-width:520px"><button class="btn btn-ghost" type="button" id="menuEnd2">Main menu</button></div>';
-  $("endBody").innerHTML=html; show("vEnd"); if(right>=Math.ceil(P.order.length/2)) confetti();
-  $("menuEnd2").addEventListener("click",function(){ show("vHome"); });
-}
-
-/* ---------- navigation ---------- */
-$("pickHost").addEventListener("click",function(){ renderTeamInputs(); show("vSetup"); });
-$("pickPhone").addEventListener("click",function(){ show("vJoin"); });
-$("homeBtn").addEventListener("click",function(){ hTimer.stop(); pTimer.stop(); show("vHome"); });
-show("vHome");
-})();
+start();
 </script>
-
-</body></html>
+</body>
+</html>
